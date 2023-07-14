@@ -82,8 +82,8 @@ const Projects = () => {
               isBlog={false}
               title="Portfolio"
               description="My portfolio website to showcases my skills and accomplishments. Using React, React Router, and Bootstrap, it offers a seamless user experience."
-              ghLink="https://github.com/shravni21"
-              demoLink="https://shravni.netlify.app/"
+              ghLink="https://github.com/shravni21/Portfolio"
+              demoLink="https://shravni.vercel.app/"
             />
           </Col>
           <Col md={4} className="project-card">
