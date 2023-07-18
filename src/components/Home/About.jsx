@@ -32,7 +32,7 @@ const About = () => {
               <br />
               <br />
               I have a passion for working
-              with <b className="yellow">Node.js, MongoDB,</b> and
+              with <b className="yellow">Node.js, MongoDB</b> and
               <i>
                 <b className="yellow">
                   {" "}
@@ -45,9 +45,9 @@ const About = () => {
               </i>
               <br />
               <br />I am proficient in
-              <b className="yellow"> Javascript, </b>
+              <b className="yellow"> C++ </b>
               as well as have knowledge in programming languages such as C,
-              <b className="yellow"> C++ and Python.</b>
+              <b className="yellow">Python,Javascript.</b>
               <br />
               <br />I am also interested in building new
               <b className="yellow"> Web Technologies and Products, </b>
