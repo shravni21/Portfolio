@@ -1,16 +1,38 @@
-import React from 'react'
+import React from "react";
 
 const HeroText = () => {
   return (
-    <div className="text-center">
-      <h1 className="text-5xl md:text-6xl font-extralight text-gray-800">
-        hi! <span className="font-semibold text-[#cf8a93]">i&apos;m Shravni</span>
+
+    <div className="mb-8 md:mb-12 text-center max-md:mt-12">
+      <h1
+        className="
+    text-4xl
+    sm:text-4xl
+    md:text-5xl
+    lg:text-6xl
+    font-bold
+    mb-6 md:mb-8
+  "
+      >
+        <span style={{ color: "var(--color-gray, #424242)" }}>hi! </span>
+        <span style={{ color: "var(--color-primary, #f59300)" }}>
+          i&apos;m shravni
+        </span>
       </h1>
-      <p className="mt-4 text-gray-500 text-lg md:text-xl">
-        developer • frontend & backend • creative web experiences
+
+      <p
+        className="
+          text-xl
+          sm:text-xl
+          md:text-xl
+          tracking-wide
+        "
+        style={{ color: "var(--color-gray-light, #424242)" }}
+      >
+        Software Developer,Java, React.js
       </p>
     </div>
-  )
-}
+  );
+};
 
-export default HeroText
+export default HeroText;

@@ -1,61 +1,31 @@
+/* -------------------------------------------------
+   TAILWIND CSS DIRECTIVES (Must be at the top)
+-------------------------------------------------- */
 @import "tailwindcss";
 
+
+
+
+/* -------------------------------------------------
+   IMPORT FONTS (Requires installing @fontsource packages via npm)
+-------------------------------------------------- */
+@import "@fontsource/zen-kaku-gothic-new/index.css";
+@import "@fontsource-variable/roboto-mono/index.css";
+
+
+/* -------------------------------------------------
+   THEME VARIABLES & Base Styles
+-------------------------------------------------- */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --font-sans: ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Roboto Mono Variable", monospace;
+  --font-body: "Zen Kaku Gothic New", sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* FIX: Use standard CSS properties for base styles in globals.css */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
+  /* This loads your imported font */
+  font-family: "Zen Kaku Gothic New", sans-serif; 
 
-/* backface + smooth transform */
-.transition-transform { will-change: transform, opacity; }
-
-/* if data-dx/dy/scale present, set initial transform using CSS variables (applied before animation)
-   We add an inline style by using attribute selectors. On mount, the element will have data-dx/dy/scale.
-   Because React renders with isOpen initially false then true, the element will transition from this initial transform to none.
-*/
-[data-dx][data-dy][data-scale] {
-  /* set CSS vars from attributes using JS in case of non-support — we will set via JS if needed */
-  /* fallback: use a transform composed from attr() with calc — attr() for numbers not broadly supported in transform so we fallback to setting a style via inline transform in JS if needed */
-}
-
-/* To ensure the transform-from-origin effect works across browsers, we will set the initial transform inline from JS instead.
-   However we keep the transition class here:
-*/
-.opacity-0 { opacity: 0; }
-.opacity-100 { opacity: 1; }
-
-/* backdrop dim when a window is mounted - optional (add a separate element if you prefer) */
-.os-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(2,6,23,0.20);
-  backdrop-filter: blur(4px) saturate(1.05);
-  z-index: 90;
-}
-
-/* custom scrollbar */
-.custom-scroll::-webkit-scrollbar { width: 10px; }
-.custom-scroll::-webkit-scrollbar-thumb {
-  background-color: rgba(55,65,81,0.12);
-  border-radius: 999px;
-  border: 3px solid rgba(255,255,255,0.85);
+  @apply antialiased;
 }

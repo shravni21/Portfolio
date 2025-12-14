@@ -1,29 +1,58 @@
-import React, { useRef } from "react";
+"use client";
 
-export default function Dock({ apps, openApp, openAppId }) {
-  const buttonsRef = useRef({});
+import React from "react";
+import HeroText from "./UI/HeroText";
+import IconBar from "./UI/IconBar";
 
-  function handleClick(appId) {
-    const btn = buttonsRef.current[appId];
-    const rect = btn ? btn.getBoundingClientRect() : null;
-    openApp(appId, rect);
-  }
-
+export default function Dock({ apps = [], openApp, openAppIds = [] }) {
   return (
-    <aside className="absolute left-4 top-20 w-28 bg-white/70 backdrop-blur p-3 rounded-xl shadow-lg border border-slate-200">
-      <div className="flex flex-col gap-2">
-        {apps.map((app) => (
-          <button
-            key={app.id}
-            ref={(el) => (buttonsRef.current[app.id] = el)}
-            onClick={() => handleClick(app.id)}
-            className={`flex items-center gap-3 p-2 rounded-lg hover:bg-slate-100 focus:outline-none ${openAppId === app.id ? "ring-2 ring-offset-1 ring-slate-300" : ""}`}
-          >
-            <div className="text-lg">{app.icon}</div>
-            <div className="text-sm text-slate-700">{app.title}</div>
-          </button>
-        ))}
+    <div
+      className="
+        absolute top-1/2 left-1/2 
+        -translate-x-1/2 -translate-y-1/2 
+        w-[95vw] sm:w-[85vw] md:w-[75vw] lg:w-[65vw] xl:w-[55vw]
+        max-w-[900px] h-[85vh] sm:h-[80vh] md:h-[75vh]
+        rounded-xl sm:rounded-2xl border overflow-hidden select-none 
+        transition-all duration-150 ease-out z-20
+        max-md:contents
+      "
+      style={{
+        fontFamily:
+          "Zen Kaku Gothic New, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
+        background: "var(--color-white, #ffffff)",
+        borderColor: "var(--color-gray-lighter, #cecece)",
+        boxShadow: "0 20px 60px rgba(0,0,0,0.12)",
+      }}
+      aria-hidden
+    >
+      {/* Titlebar */}
+      <div
+        className="hidden md:block px-6 py-3.5 border-b text-lg font-medium tracking-wide"
+        style={{
+          backgroundColor: "var(--color-gray, #424242)",
+          color: "#fff",
+          borderColor: "var(--color-gray-light, #a4a4a4)",
+        }}
+      >
+        home
       </div>
-    </aside>
+
+      {/* Content */}
+      <div
+        className="
+          relative text-center flex flex-col items-center
+          md:p-12 md:justify-center md:h-[calc(100%-56px)]
+          p-6 max-md:min-h-screen max-md:pt-24 max-md:justify-start
+        "
+      >
+        <HeroText />
+
+        <IconBar
+          apps={apps}
+          openApp={openApp}
+          openAppIds={openAppIds}
+        />
+      </div>
+    </div>
   );
 }
