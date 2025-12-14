@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import TopBar from "./TopBar";
 import Dock from "./Dock";
 import Window from "./Window";
 import { appsList } from "../data/index";
@@ -11,219 +10,182 @@ import WavesBackground from "../components/UI/WavesBackground";
 export default function OSPortfolio() {
   const [windows, setWindows] = useState([]);
   const [topZ, setTopZ] = useState(100);
+  const [isMobile, setIsMobile] = useState(false);
 
-  const [playOpen] = useSound("/audio/mixkit-modern-technology-select-3124.mp3", { volume: 0.5 });
-  const [playClose] = useSound("/audio/mixkit-fast-double-click-on-mouse-275.mp3", { volume: 0.5 });
+  const [playOpen] = useSound(
+    "/audio/mixkit-modern-technology-select-3124.mp3",
+    { volume: 0.5 }
+  );
+  const [playClose] = useSound(
+    "/audio/mixkit-fast-double-click-on-mouse-275.mp3",
+    { volume: 0.5 }
+  );
 
-  // Calculate centered position for new window
+  /* ================= MOBILE DETECTION (ONCE) ================= */
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  /* ================= CENTER POSITION ================= */
   const getCenterPosition = (offset = 0) => {
-    const w = typeof window !== 'undefined' ? window.innerWidth : 1024;
-    const h = typeof window !== 'undefined' ? window.innerHeight : 768;
-    const baseX = Math.max(20, Math.round(w / 2 - 520 / 2));
-    const baseY = Math.max(20, Math.round(h / 2 - 420 / 2));
-    
+    const w = window.innerWidth;
+    const h = window.innerHeight;
     return {
-      x: baseX + offset * 30,
-      y: baseY + offset * 30
+      x: w / 2 - 520 / 2 + offset * 30,
+      y: h / 2 - 420 / 2 + offset * 30,
     };
   };
 
-  // Open or focus app
+  /* ================= OPEN APP ================= */
   const openApp = (id, rect) => {
-    setWindows(currentWindows => {
-      const existingWindow = currentWindows.find(w => w.id === id);
-      
-      // If app already open, bring to front
-      if (existingWindow) {
+    setWindows((current) => {
+      const existing = current.find((w) => w.id === id);
+
+      if (existing && !isMobile) {
         const nextZ = topZ + 1;
         setTopZ(nextZ);
-        return currentWindows.map(w => 
-          w.uniqueId === existingWindow.uniqueId 
-            ? { ...w, zIndex: nextZ } 
+        return current.map((w) =>
+          w.uniqueId === existing.uniqueId
+            ? { ...w, zIndex: nextZ }
             : w
         );
       }
 
-      // Create new window
-      const uniqueId = `${id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-      const app = appsList.find(a => a.id === id);
-      
-      if (!app) {
-        console.error(`App with id "${id}" not found`);
-        return currentWindows;
-      }
+      const app = appsList.find((a) => a.id === id);
+      if (!app) return current;
 
       const nextZ = topZ + 1;
       setTopZ(nextZ);
+      playOpen();
 
-      const newWindow = {
-        uniqueId,
-        id,
-        app,
-        pos: getCenterPosition(currentWindows.length),
-        zIndex: nextZ,
-        isOpen: false,
-        originRect: rect || null,
-        isDragging: false,
-        dragOffset: { x: 0, y: 0 }
-      };
-
-      // Play open sound
-      try { playOpen(); } catch (e) { console.error('Sound error:', e); }
-
-      // Add window and schedule animation
-      setTimeout(() => {
-        setWindows(prev => prev.map(w => 
-          w.uniqueId === uniqueId ? { ...w, isOpen: true } : w
-        ));
-      }, 50);
-
-      return [...currentWindows, newWindow];
+      return [
+        ...current,
+        {
+          uniqueId: `${id}-${Date.now()}`,
+          id,
+          app,
+          pos: getCenterPosition(current.length),
+          zIndex: nextZ,
+          isDragging: false,
+          dragOffset: { x: 0, y: 0 },
+        },
+      ];
     });
   };
 
-  // Request to close window (start close animation)
+  /* ================= CLOSE ================= */
   const requestCloseApp = (uniqueId) => {
-    setWindows(prev => prev.map(w => 
-      w.uniqueId === uniqueId ? { ...w, isOpen: false } : w
-    ));
-    try { playClose(); } catch (e) { console.error('Sound error:', e); }
-    
-    // Remove window after animation completes (300ms to match CSS transition)
-    setTimeout(() => {
-      setWindows(prev => prev.filter(w => w.uniqueId !== uniqueId));
-    }, 350);
+    playClose();
+    setWindows((prev) => prev.filter((w) => w.uniqueId !== uniqueId));
   };
 
-  // Bring window to front
+  /* ================= BRING TO FRONT ================= */
   const bringWindowToFront = (uniqueId) => {
+    if (isMobile) return;
     const nextZ = topZ + 1;
     setTopZ(nextZ);
-    setWindows(prev => prev.map(w => 
-      w.uniqueId === uniqueId ? { ...w, zIndex: nextZ } : w
-    ));
+    setWindows((prev) =>
+      prev.map((w) =>
+        w.uniqueId === uniqueId ? { ...w, zIndex: nextZ } : w
+      )
+    );
   };
 
-  // Start dragging window
-  const handleStartDrag = (uniqueId, e, windowElement) => {
-    if (!windowElement) return;
-    
+  /* ================= START DRAG ================= */
+  const handleStartDrag = (uniqueId, e, windowEl) => {
+    if (!windowEl || isMobile) return;
+
     e.preventDefault();
-    const rect = windowElement.getBoundingClientRect();
-    const offset = { 
-      x: e.clientX - rect.left, 
-      y: e.clientY - rect.top 
-    };
-    
-    setWindows(prev => prev.map(w => 
-      w.uniqueId === uniqueId 
-        ? { ...w, isDragging: true, dragOffset: offset } 
-        : w
-    ));
-    
+    const rect = windowEl.getBoundingClientRect();
+
+    setWindows((prev) =>
+      prev.map((w) =>
+        w.uniqueId === uniqueId
+          ? {
+              ...w,
+              isDragging: true,
+              dragOffset: {
+                x: e.clientX - rect.left,
+                y: e.clientY - rect.top,
+              },
+            }
+          : w
+      )
+    );
+
     bringWindowToFront(uniqueId);
   };
 
-  // Global pointer move handler for dragging
+  /* ================= DRAG MOVE ================= */
   useEffect(() => {
-    function onPointerMove(e) {
-      setWindows(prev => prev.map(w => {
-        if (w.isDragging) {
-          return {
-            ...w,
-            pos: {
-              x: Math.max(0, Math.min(window.innerWidth - 100, e.clientX - w.dragOffset.x)),
-              y: Math.max(0, Math.min(window.innerHeight - 100, e.clientY - w.dragOffset.y))
-            }
-          };
-        }
-        return w;
-      }));
-    }
+    if (isMobile) return;
 
-    function onPointerUp() {
-      setWindows(prev => prev.map(w => 
-        w.isDragging ? { ...w, isDragging: false } : w
-      ));
-    }
+    const onPointerMove = (e) => {
+      setWindows((prev) =>
+        prev.map((w) =>
+          w.isDragging
+            ? {
+                ...w,
+                pos: {
+                  x: e.clientX - w.dragOffset.x,
+                  y: e.clientY - w.dragOffset.y,
+                },
+              }
+            : w
+        )
+      );
+    };
+
+    const onPointerUp = () => {
+      setWindows((prev) =>
+        prev.map((w) =>
+          w.isDragging ? { ...w, isDragging: false } : w
+        )
+      );
+    };
 
     window.addEventListener("pointermove", onPointerMove);
     window.addEventListener("pointerup", onPointerUp);
-    
+
     return () => {
       window.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("pointerup", onPointerUp);
     };
-  }, []);
-
-  // ESC key to close topmost window
-  useEffect(() => {
-    function onKeyDown(e) {
-      if (e.key === "Escape" && windows.length > 0) {
-        e.preventDefault();
-        const topWindow = windows.reduce((max, w) => 
-          w.zIndex > max.zIndex ? w : max
-        , windows[0]);
-        requestCloseApp(topWindow.uniqueId);
-      }
-    }
-    
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [windows]);
-
-  // Handle window resize - recenter all windows
-  useEffect(() => {
-    let resizeTimer;
-    
-    function handleResize() {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => {
-        setWindows(prev => prev.map((win, index) => ({
-          ...win,
-          pos: getCenterPosition(index)
-        })));
-      }, 100);
-    }
-    
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      clearTimeout(resizeTimer);
-    };
-  }, []);
-
-  // Get list of open app IDs for dock indicators
-  const openAppIds = windows.map(w => w.id);
+  }, [isMobile]);
 
   return (
     <>
-      <Dock 
-        apps={appsList} 
-        openApp={openApp} 
-        openAppIds={openAppIds} 
+      <Dock
+        apps={appsList}
+        openApp={openApp}
+        openAppIds={windows.map((w) => w.id)}
       />
 
       {windows.map((win) => {
         const windowRef = React.createRef();
-        
+
         return (
           <Window
             key={win.uniqueId}
             app={win.app}
             pos={win.pos}
-            windowRef={windowRef}
-            onDragStart={(e) => handleStartDrag(win.uniqueId, e, windowRef.current)}
-            isOpen={win.isOpen}
             zIndex={win.zIndex}
-            originRect={win.originRect}
-            onRequestClose={() => requestCloseApp(win.uniqueId)}
+            isMobile={isMobile}
+            windowRef={windowRef}
+            onDragStart={(e) =>
+              handleStartDrag(win.uniqueId, e, windowRef.current)
+            }
             bringToFront={() => bringWindowToFront(win.uniqueId)}
+            onRequestClose={() => requestCloseApp(win.uniqueId)}
           />
         );
       })}
 
       <WavesBackground />
     </>
+    
   );
 }

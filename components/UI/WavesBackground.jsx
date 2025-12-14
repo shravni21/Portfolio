@@ -3,17 +3,17 @@ import Wave from "react-wavify";
 
 export default function WavesBackground() {
   return (
-    <div className="absolute left-0 bottom-0 w-full pointer-events-none -z-10">
+    <div className="fixed inset-x-0 bottom-0 pointer-events-none z-0">
       
-      {/* Background fade */}
-      <div className="h-40 md:h-52 bg-gradient-to-t from-light to-transparent"></div>
+      <div className="absolute inset-x-0 bottom-0 h-40 md:h-52 bg-gradient-to-t from-[#bde4ff] to-transparent" />
 
       {/* Wave */}
       <Wave
+        className="block"
         fill="url(#waveGradient)"
         paused={false}
         options={{
-          height: 0,
+          height: 20,
           amplitude: 20,
           speed: 0.15,
           points: 3,

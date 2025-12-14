@@ -6,7 +6,7 @@ export default function AboutApp() {
         {/* Profile Image */}
         <div className="shrink-0">
           <img
-            src="/icon/prof_img_1.jpg" 
+            src="/icon/prof_img_1.jpg"
             alt="Shravni Wakade"
             className="
               w-28 h-28
@@ -30,6 +30,29 @@ export default function AboutApp() {
           <p className="mt-1 text-sm text-gray-500">
             India · Web Development · Software Engineering
           </p>
+
+          {/* LinkedIn */}
+          <a
+            href="https://www.linkedin.com/in/shravni-wakde-127bb9216/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="
+              inline-flex items-center gap-2 mt-2
+              text-sm font-medium text-blue-600
+              hover:text-blue-700 transition
+            "
+            style={{ color: "#0A66C2" }}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-4 h-4"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM.2 8.2h4.6V24H.2V8.2zM8.3 8.2h4.4v2.2h.1c.6-1.1 2.1-2.3 4.3-2.3 4.6 0 5.4 3 5.4 6.8V24h-4.6v-7.9c0-1.9 0-4.4-2.7-4.4-2.7 0-3.1 2.1-3.1 4.3V24H8.3V8.2z" />
+            </svg>
+            LinkedIn
+          </a>
         </div>
       </div>
 

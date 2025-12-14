@@ -30,7 +30,7 @@ export const appsList = [
   },
   {
     id: "links",
-    title: "links",
+    title: "coding profiles",
     icon: "/icon/icon_links.webp",
     content: <ContactApp />,
   },
