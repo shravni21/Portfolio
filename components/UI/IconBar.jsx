@@ -13,7 +13,7 @@ export default function IconBar({ apps = [], openApp, openAppIds = [] }) {
 
   return (
     <div className="w-full flex justify-center mt-8 md:mt-4">
-      <div className="grid grid-cols-3 gap-6 md:flex md:items-end md:gap-8 lg:gap-10">
+      <div className="grid grid-cols-3 gap-6 md:flex md:items-end md:gap-4 lg:gap-5">
         {apps.map((app) => {
           const isOpen = openAppIds.includes(app.id);
 

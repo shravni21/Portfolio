@@ -2,119 +2,58 @@
 
 import React, { useEffect, useRef, useState } from "react";
 
-/**
- * Props:
- *  - app
- *  - pos {x,y}  (numbers or CSS strings like "20px" allowed)
- *  - windowRef
- *  - onDragStart
- *  - isOpen (boolean)
- *  - zIndex
- *  - originRect (DOMRect | null)
- *  - onRequestClose()
- *  - onCloseComplete()
- *  - bringToFront()
- */
 export default function Window({
   app,
   pos = { x: 100, y: 100 },
   windowRef,
   onDragStart,
-  isOpen = false,
+  isOpen = true,
   zIndex = 100,
-  originRect = null,
   onRequestClose,
-  onCloseComplete,
   bringToFront,
 }) {
   const innerRef = useRef(null);
-  const [initialTransform, setInitialTransform] = useState(null);
-  const [applyInitial, setApplyInitial] = useState(false);
+  const startY = useRef(0);
+  const currentY = useRef(0);
 
-  // compute initial transform only once when originRect is present
+  const [isMobile, setIsMobile] = useState(false);
+  const [dragOffsetY, setDragOffsetY] = useState(0);
+
+  /* ================= MOBILE DETECTION ================= */
   useEffect(() => {
-    if (!originRect || !innerRef.current) {
-      setInitialTransform(null);
-      return;
-    }
-
-    const winRect = innerRef.current.getBoundingClientRect();
-    const winCenterX = winRect.left + winRect.width / 2;
-    const winCenterY = winRect.top + winRect.height / 2;
-
-    const iconCenterX = originRect.left + originRect.width / 2;
-    const iconCenterY = originRect.top + originRect.height / 2;
-
-    const dx = iconCenterX - winCenterX;
-    const dy = iconCenterY - winCenterY;
-    const scale = 0.72;
-
-    setInitialTransform({ dx, dy, scale });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [originRect]);
-
-  // Trigger the entry animation: set initial transform, then remove it next frame so transition runs.
-  useEffect(() => {
-    if (initialTransform && isOpen) {
-      // apply initial style for one frame, then remove to let CSS transition animate to final
-      setApplyInitial(true);
-      const raf = requestAnimationFrame(() => {
-        // remove initial transform next frame, which will cause CSS transition to animate
-        // use another rAF to ensure layout applied — two frames is safer cross-browser
-        requestAnimationFrame(() => setApplyInitial(false));
-      });
-
-      return () => cancelAnimationFrame(raf);
-    } else {
-      // If not open or no initial transform, make sure we don't hold it
-      setApplyInitial(false);
-    }
-  }, [initialTransform, isOpen]);
-
-  // focus on mount
-  useEffect(() => {
-    if (innerRef.current) innerRef.current.focus();
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
   }, []);
 
-  // when animation finishes (opacity property), if isOpen === false call onCloseComplete
-  function handleTransitionEnd(e) {
-    if (e.propertyName === "opacity" && !isOpen) {
-      onCloseComplete && onCloseComplete();
+  /* ================= SWIPE DOWN (MOBILE) ================= */
+  function onPointerDown(e) {
+    if (!isMobile) {
+      bringToFront && bringToFront();
+      return;
+    }
+    startY.current = e.clientY;
+  }
+
+  function onPointerMove(e) {
+    if (!isMobile) return;
+    currentY.current = e.clientY - startY.current;
+    if (currentY.current > 0) {
+      setDragOffsetY(currentY.current);
     }
   }
 
-  function handlePointerDown(e) {
-    bringToFront && bringToFront();
+  function onPointerUp() {
+    if (!isMobile) return;
+    if (currentY.current > 120) {
+      onRequestClose && onRequestClose();
+    }
+    setDragOffsetY(0);
+    currentY.current = 0;
   }
 
-  function handleCloseClick(e) {
-    e.stopPropagation();
-    onRequestClose && onRequestClose();
-  }
-
-  // animation classes
-  const animInClass = isOpen
-    ? "opacity-100 translate-y-0 scale-100"
-    : "opacity-0 translate-y-3 scale-[0.98] pointer-events-none";
-
-  // data attributes for optional transform logic (keeps compatibility with existing CSS approach)
-  const dataAttrs = initialTransform
-    ? {
-        "data-dx": String(initialTransform.dx),
-        "data-dy": String(initialTransform.dy),
-        "data-scale": String(initialTransform.scale),
-      }
-    : {};
-
-  // build inline transform style for entry animation
-  // when applyInitial === true we set transform to translate(dx,dy) scale(scale)
-  // otherwise let CSS/utility classes handle transform (or undefined)
-  const entryTransformStyle =
-    initialTransform && applyInitial
-      ? `translate(${initialTransform.dx}px, ${initialTransform.dy}px) scale(${initialTransform.scale})`
-      : undefined;
-
-  // Ensure left/top have units if pos.x/pos.y are numbers
+  /* ================= POSITIONING ================= */
   const left = typeof pos.x === "number" ? `${pos.x}px` : pos.x;
   const top = typeof pos.y === "number" ? `${pos.y}px` : pos.y;
 
@@ -123,52 +62,63 @@ export default function Window({
       ref={windowRef}
       role="dialog"
       aria-label={`${app?.title ?? "app"} window`}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
       style={{
-        left,
-        top,
+        left: isMobile ? 0 : left,
+        top: isMobile ? "auto" : top,
+        bottom: isMobile ? 0 : "auto",
         zIndex,
-        transform: entryTransformStyle,
-        // preserve the transform transitions declared by tailwind classes
-        transitionProperty: "transform, opacity",
+        transform: isMobile
+          ? `translateY(${dragOffsetY}px)`
+          : undefined,
+        transition: isMobile
+          ? "transform 0.25s ease-out"
+          : "transform 0.15s ease-out, opacity 0.15s ease-out",
       }}
-      {...dataAttrs}
-      className={`absolute w-[min(55vw,900px)] h-[75vh] bg-white rounded-lg border border-slate-200 shadow-2xl overflow-hidden select-none transition-transform transition-opacity duration-150 ease-out ${animInClass}`}
-      onTransitionEnd={handleTransitionEnd}
-      onPointerDown={handlePointerDown}
+      className={`
+        ${isMobile ? "fixed w-full h-[50vh] rounded-t-2xl" : "absolute w-[min(55vw,900px)] h-[75vh] rounded-lg"}
+        bg-white border border-slate-200 shadow-2xl overflow-hidden
+        select-none
+      `}
     >
-      {/* Titlebar */}
+      {/* ================= TITLE BAR ================= */}
       <div
-        onPointerDown={onDragStart}
-        className="flex items-center justify-between px-6 py-3 text-white border-b cursor-move select-none"
-          style={{
+        onPointerDown={!isMobile ? onDragStart : undefined}
+        className={`
+          flex items-center justify-between px-5 py-3
+          ${isMobile ? "cursor-default" : "cursor-move"}
+          text-white border-b
+        `}
+        style={{
           backgroundColor: "var(--color-gray, #424242)",
-          color: "#fff",
           borderColor: "var(--color-gray-light, #a4a4a4)",
         }}
       >
-        <div className="flex items-center gap-3">
-          {/* <div className="text-lg opacity-90">{app?.icon}</div> */}
-          <div className="font-medium text-lg tracking-wide">{app?.title}</div>
+        <div className="font-medium text-lg tracking-wide">
+          {app?.title}
         </div>
 
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handleCloseClick}
-            aria-label="Close window"
-            className="w-10 h-9 rounded bg-white/6 border border-slate-700/20 flex items-center justify-center text-sm font-semibold hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-slate-500"
-            title="Close"
-          >
-            <span className="text-[0.95rem]">[x]</span>
-          </button>
-        </div>
+        <button
+          onClick={onRequestClose}
+          aria-label="Close window"
+          className="w-9 h-8 rounded bg-white/10 flex items-center justify-center hover:bg-white/20"
+        >
+          ✕
+        </button>
       </div>
 
-      {/* Content (innerRef used for measuring) */}
+      {/* ================= CONTENT ================= */}
       <div
         ref={innerRef}
         tabIndex={-1}
         className="p-6 overflow-auto text-slate-700"
-        style={{ maxHeight: "calc(86vh - 64px)" }}
+        style={{
+          maxHeight: isMobile
+            ? "calc(50vh - 56px)"
+            : "calc(75vh - 56px)",
+        }}
       >
         {app?.content}
       </div>

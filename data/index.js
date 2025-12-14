@@ -11,21 +11,21 @@ export const appsList = [
     content: <AboutApp />,
   },
   {
-    id: "work",
-    title: "work",
+    id: "projects",
+    title: "projects",
     icon: "/icon/icon_work.webp",
     content: <ProjectsApp />,
   },
   {
     id: "professional",
     title: "professional",
-    icon: "/icon/icon_prof.png",
+    icon: "/icon/icon_path.png",
     content: <ResumeApp />,
   },
   {
-    id: "contact",
-    title: "contact",
-    icon: "/icon/icon_contact.webp",
+    id: "Skills",
+    title: "Skills",
+    icon: "/icon/icon_faq.webp",
     content: <ContactApp />,
   },
   {
@@ -34,4 +34,5 @@ export const appsList = [
     icon: "/icon/icon_links.webp",
     content: <ContactApp />,
   },
+
 ];
