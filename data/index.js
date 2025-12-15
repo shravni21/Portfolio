@@ -1,7 +1,8 @@
 import AboutApp from "../components/AboutApp";
 import ProjectsApp from "../components/ProjectsApp";
 import ResumeApp from "../components/ResumeApp";
-import ContactApp from "../components/ContactApp";
+import SkillsApp from "../components/SkillsApp";
+import CodingProfilesApp from "../components/CodingProfilesApp";
 
 export const appsList = [
   {
@@ -26,13 +27,13 @@ export const appsList = [
     id: "Skills",
     title: "Skills",
     icon: "/icon/icon_faq.webp",
-    content: <ContactApp />,
+    content: <SkillsApp/>
   },
   {
     id: "links",
     title: "coding profiles",
     icon: "/icon/icon_links.webp",
-    content: <ContactApp />,
+    content: <CodingProfilesApp />,
   },
 
 ];

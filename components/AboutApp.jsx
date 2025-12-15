@@ -6,7 +6,7 @@ export default function AboutApp() {
         {/* Profile Image */}
         <div className="shrink-0">
           <img
-            src="/icon/prof_img_1.jpg"
+            src="/icon/prof_img.png"
             alt="Shravni Wakade"
             className="
               w-28 h-28
@@ -19,7 +19,7 @@ export default function AboutApp() {
 
         {/* Name & Title */}
         <div className="text-center sm:text-left">
-          <h1 className="text-3xl md:text-4xl font-semibold text-orange-500">
+          <h1 className="text-3xl md:text-4xl font-semibold " style={{ color: "var(--color-primary, #f59300)" }}>
             Shravni Wakade
           </h1>
 
@@ -28,7 +28,7 @@ export default function AboutApp() {
           </p>
 
           <p className="mt-1 text-sm text-gray-500">
-            India · Web Development · Software Engineering
+            India · Software Development · Engineering
           </p>
 
           {/* LinkedIn */}
@@ -36,11 +36,7 @@ export default function AboutApp() {
             href="https://www.linkedin.com/in/shravni-wakde-127bb9216/"
             target="_blank"
             rel="noopener noreferrer"
-            className="
-              inline-flex items-center gap-2 mt-2
-              text-sm font-medium text-blue-600
-              hover:text-blue-700 transition
-            "
+            className="inline-flex items-center gap-2 mt-2 text-sm font-medium transition"
             style={{ color: "#0A66C2" }}
           >
             <svg
@@ -59,18 +55,23 @@ export default function AboutApp() {
       {/* About Text */}
       <div className="space-y-4 max-w-2xl">
         <p className="text-base leading-relaxed text-gray-700">
-          I’m a full-stack developer who enjoys building clean, reliable,
-          and user-focused web applications. I like working across frontend
-          and backend, where I can combine logic with thoughtful UI design.
+          Software Developer with{" "}
+          <span className="font-medium">
+            1.5 years of professional experience
+          </span>{" "}
+          working on real-world software development projects. I have contributed
+          to building, enhancing, and maintaining applications in production
+          environments, focusing on code quality, reliability, and performance.
         </p>
 
         <p className="text-base leading-relaxed text-gray-700">
-          I work primarily with{" "}
+          My primary expertise lies in{" "}
           <span className="font-medium">Java, Spring Boot, and React.js</span>,
-          and have a basic understanding of{" "}
-          <span className="font-medium">Machine Learning and AI concepts</span>.
-          I enjoy learning new technologies and exploring ideas that can grow
-          into meaningful products.
+          where I work across backend services, REST APIs, and frontend
+          integration. I also have a foundational understanding of{" "}
+          <span className="font-medium">Machine Learning and AI concepts</span>,
+          and I continuously work on strengthening my software engineering
+          fundamentals through hands-on learning and practice.
         </p>
       </div>
     </div>
