@@ -54,24 +54,24 @@ export default function ResumeApp() {
     {
       role: "SDE Intern",
       company: "Connecticus Technologies, Pune",
-      duration: "Jan 2024 – June 2024",
+      duration: "Jan 2024 – Dec 2024",
       desc:
-        "Worked on real-world software development projects with a strong focus on Java-based backend systems, REST APIs, and frontend integration. Gained hands-on experience in writing clean, maintainable code and collaborating within Agile teams.",
+        "Worked as a Full Stack Java intern on web-based applications. Developed basic REST APIs using Java and Spring Boot, performed CRUD operations using SQL, and integrated backend APIs with frontend components built using HTML, CSS, JavaScript, and React. Assisted in debugging, API testing using Postman, and followed Agile development practices.",
     },
     {
-      role: "Software Engineer (External)",
-      company: "Siemens Digital Industries Software (DISW), Pune",
-      duration: "June 2024 – May 2025",
+      role: "Associate Software Engineer",
+      company: "Connecticus Technologies, Pune",
+      duration: "Jan 2025 – May 2025",
       desc:
-        "Contributed to enterprise-level software development as an external engineer. Worked on performance-focused features, code quality improvements, and production-grade systems following industry best practices.",
+        "Worked as a Full-Time Full Stack Java Engineer. Developed and enhanced REST APIs using Spring Boot and Java 8, handled database queries using SQL, and connected backend services with React-based UI screens. Supported QA during testing, fixed production bugs, and participated in Agile sprint activities.",
     },
   ];
 
   return (
     <div className="space-y-10 max-w-3xl">
-      <p className="text-sm text-gray-700">
+      {/* <p className="text-sm text-gray-700">
         Professional journey — <span className="font-medium">1 year 5 months</span> of experience.
-      </p>
+      </p> */}
 
       <div className="relative border-l-2 border-gray-200 space-y-10">
         {journey.map((item, index) => (
